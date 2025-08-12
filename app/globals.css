@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Basic Tailwind setup - no shadcn variables */
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-white text-gray-900;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Optional: Add dark mode support */
+@media (prefers-color-scheme: dark) {
+  @layer base {
+    body {
+      @apply bg-gray-900 text-white;
+    }
+    * {
+      @apply border-gray-700;
+    }
+  }
+}
