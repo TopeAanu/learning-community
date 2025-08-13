@@ -197,30 +197,26 @@ const HeroSection = () => {
         {/* Floating code elements */}
         <div className="absolute inset-0 z-10 opacity-30">
           <div className="absolute top-20 left-1/4 text-green-300 font-mono text-sm animate-pulse drop-shadow-lg">{`</>`}</div>
-          <div className="absolute top-60 right-1/4 text-blue-300 font-mono text-sm animate-pulse drop-shadow-lg">{`{code}`}</div>
+          <div className="absolute top-70 right-1/4 text-blue-300 font-mono text-sm animate-pulse drop-shadow-lg">{`{learn}`}</div>
           <div className="absolute bottom-32 left-1/3 text-purple-300 font-mono text-sm animate-pulse drop-shadow-lg">{`function()`}</div>
         </div>
       </div>
 
       {/* Content */}
       <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight drop-shadow-2xl">
-            From{" "}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Learning
-            </span>
-            <br /> to{" "}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Earning
-            </span>
-          </h1>
+        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight drop-shadow-2xl">
+              From <span className="text-pink-400">Learning</span>
+              <br /> to <span className="text-pink-400">Earning</span>
+            </h1>
+          </div>
         </div>
 
         <div className="mb-8 sm:mb-12 max-w-3xl mx-auto px-6 sm:px-0">
           <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed drop-shadow-lg text-center sm:text-left">
-            Join a community that bridges the gap between tech
-            <br className="sm:hidden" /> knowledge and career success.
+            Join a community that bridges the gap between
+            <br className="sm:hidden" /> tech knowledge and career success.
           </p>
         </div>
 
@@ -242,7 +238,7 @@ const HeroSection = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
-          <button className="group bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transform hover:scale-105 transition-all duration-200 hover:shadow-lg">
+          <button className="group bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transform hover:scale-105 transition-all duration-200 hover:shadow-lg">
             Join The Circle Now
             <ChevronRight className="h-4 w-4 inline-block ml-2 group-hover:translate-x-1 transition-transform duration-200" />
           </button>
@@ -296,54 +292,64 @@ const HeroSection = () => {
           }
         }
 
-        /* Mobile animation - starts with slight right offset to show first card completely */
-        /* Mobile animation - shows all 7 cards */
+        /* Mobile animation */
         @keyframes slideLeftRightMobile {
           0% {
             transform: translateX(20%);
           }
-          10% {
-            transform: translateX(20%);
+          13.33% {
+            transform: translateX(20%); /* Hold at position 1 for 4 seconds */
           }
-          20% {
+          19.44% {
             transform: translateX(-11.91%);
           }
-          30% {
-            transform: translateX(-11.91%);
-          }
-          40% {
+          25.56% {
             transform: translateX(-40.48%);
           }
-          50% {
-            transform: translateX(-40.48%);
-          }
-          60% {
+          31.67% {
             transform: translateX(-69.05%);
           }
-          70% {
-            transform: translateX(-69.05%);
-          }
-          80% {
+          37.78% {
             transform: translateX(-97.62%);
           }
-          90% {
-            transform: translateX(-97.62%);
-          }
-          100% {
+          43.89% {
             transform: translateX(-130.19%);
           }
-          110% {
-            transform: translateX(-140.19%);
+          50% {
+            transform: translateX(-130.19%); /* Hold at position 7 */
+          }
+          56.11% {
+            transform: translateX(-97.62%);
+          }
+          62.22% {
+            transform: translateX(-69.05%);
+          }
+          68.33% {
+            transform: translateX(-40.48%);
+          }
+          74.44% {
+            transform: translateX(-11.91%);
+          }
+          80.56% {
+            transform: translateX(20%);
+          }
+          86.67% {
+            transform: translateX(
+              20%
+            ); /* Hold at position 1 again for 4 seconds */
+          }
+          100% {
+            transform: translateX(20%);
           }
         }
 
         @media (max-width: 640px) {
           .features-container {
-            padding: 0 0.5rem;
+            padding: 1 0.5rem;
           }
           .features-track {
             gap: 0.5rem;
-            animation: slideLeftRightMobile 15s linear infinite; /* Changed from 70s to 15s */
+            animation: slideLeftRightMobile 30s linear infinite;
           }
           .feature-card {
             flex: 0 0 calc(30% - 0.333rem);
