@@ -20,33 +20,10 @@ const HeroSection = () => {
   const [videoState, setVideoState] = useState<
     "transitioning-in" | "playing" | "transitioning-out"
   >("transitioning-in");
-  const [videosLoaded, setVideosLoaded] = useState(false);
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !videosLoaded) {
-            setVideosLoaded(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [videosLoaded]);
-
-  useEffect(() => {
-    if (!videosLoaded) return;
     let timeoutId: NodeJS.Timeout;
 
     const cycleVideos = () => {
@@ -71,17 +48,16 @@ const HeroSection = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [currentVideo, videosLoaded]);
+  }, [currentVideo]);
 
   useEffect(() => {
-    if (!videosLoaded) return;
     const activeVideo =
       currentVideo === "adchero1" ? video1Ref.current : video2Ref.current;
     if (activeVideo && videoState === "transitioning-in") {
       activeVideo.currentTime = 0;
       activeVideo.play().catch(console.error);
     }
-  }, [currentVideo, videoState, videosLoaded]);
+  }, [currentVideo, videoState]);
 
   const features = [
     {
@@ -129,60 +105,50 @@ const HeroSection = () => {
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden bg-black"
-    >
+    <section className="relative h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
-        {videosLoaded ? (
-          <>
-            <video
-              ref={video1Ref}
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-2000 ease-in-out ${
-                currentVideo === "adchero1"
-                  ? videoState === "transitioning-in"
-                    ? "opacity-0 scale-110 skew-y-1 blur-sm"
-                    : videoState === "playing"
-                    ? "opacity-100 scale-100 skew-y-0 blur-0"
-                    : "opacity-0 scale-95 -skew-y-1 blur-md"
-                  : "opacity-0 scale-95 skew-y-2 blur-lg pointer-events-none"
-              }`}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            >
-              <source src="/adchero1.mp4" type="video/mp4" />
-              <source src="/adchero1.webm" type="video/webm" />
-            </video>
-            <video
-              ref={video2Ref}
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-2000 ease-in-out ${
-                currentVideo === "adchero2"
-                  ? videoState === "transitioning-in"
-                    ? "opacity-0 scale-110 -skew-y-1 blur-sm"
-                    : videoState === "playing"
-                    ? "opacity-100 scale-100 skew-y-0 blur-0"
-                    : "opacity-0 scale-95 skew-y-1 blur-md"
-                  : "opacity-0 scale-95 -skew-y-2 blur-lg pointer-events-none"
-              }`}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            >
-              <source src="/adchero2.mp4" type="video/mp4" />
-              <source src="/adchero2.webm" type="video/webm" />
-            </video>
-          </>
-        ) : (
-          <div className="w-full h-full bg-gray-900 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"></div>
-          </div>
-        )}
+        <video
+          ref={video1Ref}
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-2000 ease-in-out ${
+            currentVideo === "adchero1"
+              ? videoState === "transitioning-in"
+                ? "opacity-0 scale-110 skew-y-1 blur-sm"
+                : videoState === "playing"
+                ? "opacity-100 scale-100 skew-y-0 blur-0"
+                : "opacity-0 scale-95 -skew-y-1 blur-md"
+              : "opacity-0 scale-95 skew-y-2 blur-lg pointer-events-none"
+          }`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        >
+          <source src="/adchero1.mp4" type="video/mp4" />
+          <source src="/adchero1.webm" type="video/webm" />
+        </video>
+        <video
+          ref={video2Ref}
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-2000 ease-in-out ${
+            currentVideo === "adchero2"
+              ? videoState === "transitioning-in"
+                ? "opacity-0 scale-110 -skew-y-1 blur-sm"
+                : videoState === "playing"
+                ? "opacity-100 scale-100 skew-y-0 blur-0"
+                : "opacity-0 scale-95 skew-y-1 blur-md"
+              : "opacity-0 scale-95 -skew-y-2 blur-lg pointer-events-none"
+          }`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        >
+          <source src="/adchero2.mp4" type="video/mp4" />
+          <source src="/adchero2.webm" type="video/webm" />
+        </video>
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/40 z-10"></div>
 
