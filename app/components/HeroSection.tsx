@@ -25,14 +25,6 @@ const HeroSection = () => {
   const video2Ref = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Carousel state
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const startXRef = useRef(0);
-  const currentXRef = useRef(0);
-  const isDraggingRef = useRef(false);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -91,7 +83,6 @@ const HeroSection = () => {
     }
   }, [currentVideo, videoState, videosLoaded]);
 
-  // Carousel functionality
   const features = [
     {
       icon: Users,
@@ -136,66 +127,6 @@ const HeroSection = () => {
       desc: "Portfolio & Career Guidance",
     },
   ];
-
-  const totalSlides = Math.ceil(features.length / 3); // 3 cards per slide on mobile
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsUserInteracting(true);
-    startXRef.current = e.touches[0].clientX;
-    isDraggingRef.current = true;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDraggingRef.current) return;
-    currentXRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!isDraggingRef.current) return;
-
-    const diff = startXRef.current - currentXRef.current;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0 && currentSlide < totalSlides - 1) {
-        setCurrentSlide((prev) => prev + 1);
-      } else if (diff < 0 && currentSlide > 0) {
-        setCurrentSlide((prev) => prev - 1);
-      }
-    }
-
-    isDraggingRef.current = false;
-    setTimeout(() => setIsUserInteracting(false), 500);
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsUserInteracting(true);
-    startXRef.current = e.clientX;
-    isDraggingRef.current = true;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingRef.current) return;
-    currentXRef.current = e.clientX;
-  };
-
-  const handleMouseUp = () => {
-    if (!isDraggingRef.current) return;
-
-    const diff = startXRef.current - currentXRef.current;
-    const threshold = 50;
-
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0 && currentSlide < totalSlides - 1) {
-        setCurrentSlide((prev) => prev + 1);
-      } else if (diff < 0 && currentSlide > 0) {
-        setCurrentSlide((prev) => prev - 1);
-      }
-    }
-
-    isDraggingRef.current = false;
-    setTimeout(() => setIsUserInteracting(false), 500);
-  };
 
   return (
     <section
@@ -293,26 +224,9 @@ const HeroSection = () => {
           </p>
         </div>
 
-        {/* Stats/Features - Animated with Carousel */}
+        {/* Stats/Features - Animated */}
         <div className="features-container">
-          <div
-            ref={carouselRef}
-            className={`features-track ${
-              isUserInteracting ? "user-interacting" : ""
-            }`}
-            style={{
-              transform: `translateX(calc(-${currentSlide * 100}% - ${
-                currentSlide * 0.5
-              }rem))`,
-            }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
+          <div className="features-track">
             {features.map((f, i) => (
               <div key={i} className="feature-card">
                 <f.icon
@@ -325,19 +239,6 @@ const HeroSection = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Carousel dots indicator for mobile */}
-        <div className="flex justify-center mt-4 gap-2 sm:hidden">
-          {Array.from({ length: totalSlides }).map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                currentSlide === index ? "bg-purple-400" : "bg-gray-600"
-              }`}
-              onClick={() => setCurrentSlide(index)}
-            />
-          ))}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
@@ -359,15 +260,6 @@ const HeroSection = () => {
           display: flex;
           gap: 1rem;
           animation: slideLeftRight 35s ease-in-out infinite;
-          cursor: grab;
-          user-select: none;
-        }
-        .features-track:active {
-          cursor: grabbing;
-        }
-        .features-track.user-interacting {
-          animation-play-state: paused;
-          transition: transform 0.3s ease-out;
         }
         .feature-card {
           flex: 0 0 calc(20% - 1rem);
@@ -378,7 +270,6 @@ const HeroSection = () => {
           padding: 1rem;
           border: 1px solid rgba(255, 255, 255, 0.2);
           transition: transform 0.3s;
-          pointer-events: none;
         }
         .feature-card:hover {
           transform: scale(1.05);
@@ -405,62 +296,44 @@ const HeroSection = () => {
           }
         }
 
+        /* Mobile animation - starts with slight right offset to show first card completely */
         /* Mobile animation - shows all 7 cards */
         @keyframes slideLeftRightMobile {
           0% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem)
-            );
+            transform: translateX(20%);
           }
           10% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem)
-            );
+            transform: translateX(20%);
           }
           20% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 31.91%)
-            );
+            transform: translateX(-11.91%);
           }
           30% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 31.91%)
-            );
+            transform: translateX(-11.91%);
           }
           40% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 60.48%)
-            );
+            transform: translateX(-40.48%);
           }
           50% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 60.48%)
-            );
+            transform: translateX(-40.48%);
           }
           60% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 89.05%)
-            );
+            transform: translateX(-69.05%);
           }
           70% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 89.05%)
-            );
+            transform: translateX(-69.05%);
           }
           80% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 117.62%)
-            );
+            transform: translateX(-97.62%);
           }
           90% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 117.62%)
-            );
+            transform: translateX(-97.62%);
           }
           100% {
-            transform: translateX(
-              calc(-${currentSlide * 100}% - ${currentSlide * 0.5}rem - 150.19%)
-            );
+            transform: translateX(-130.19%);
+          }
+          110% {
+            transform: translateX(-140.19%);
           }
         }
 
@@ -470,13 +343,10 @@ const HeroSection = () => {
           }
           .features-track {
             gap: 0.5rem;
-            animation: none; /* Disable automatic animation on mobile when using carousel */
-          }
-          .features-track:not(.user-interacting) {
-            animation: slideLeftRightMobile 15s linear infinite;
+            animation: slideLeftRightMobile 15s linear infinite; /* Changed from 70s to 15s */
           }
           .feature-card {
-            flex: 0 0 calc(33.333% - 0.333rem);
+            flex: 0 0 calc(30% - 0.333rem);
             min-width: unset;
             padding: 0.4rem;
             border-radius: 0.5rem;
