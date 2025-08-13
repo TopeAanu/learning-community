@@ -21,46 +21,17 @@ const HeroSection = () => {
     "transitioning-in" | "playing" | "transitioning-out"
   >("transitioning-in");
   const [videosLoaded, setVideosLoaded] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
-
-  // Enhanced video play function with proper error handling
-  const playVideo = async (video: HTMLVideoElement | null) => {
-    if (!video) return;
-
-    try {
-      // Only attempt to play if the video is ready and visible
-      if (video.readyState >= 2 && isVisible) {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-        }
-      }
-    } catch (error) {
-      // Handle different types of errors
-      if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          console.log("Video play was interrupted (power saving mode)");
-          // Optionally retry after a delay
-          setTimeout(() => playVideo(video), 1000);
-        } else if (error.name === "NotAllowedError") {
-          console.log("Autoplay prevented by browser policy");
-        } else {
-          console.log("Video play error:", error.message);
-        }
-      }
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          setIsVisible(entry.isIntersecting);
           if (entry.isIntersecting && !videosLoaded) {
             setVideosLoaded(true);
+            observer.disconnect();
           }
         });
       },
@@ -75,7 +46,7 @@ const HeroSection = () => {
   }, [videosLoaded]);
 
   useEffect(() => {
-    if (!videosLoaded || !isVisible) return;
+    if (!videosLoaded) return;
     let timeoutId: NodeJS.Timeout;
 
     const cycleVideos = () => {
@@ -100,41 +71,17 @@ const HeroSection = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [currentVideo, videosLoaded, isVisible]);
+  }, [currentVideo, videosLoaded]);
 
   useEffect(() => {
-    if (!videosLoaded || !isVisible) return;
-
+    if (!videosLoaded) return;
     const activeVideo =
       currentVideo === "adchero1" ? video1Ref.current : video2Ref.current;
-
     if (activeVideo && videoState === "transitioning-in") {
       activeVideo.currentTime = 0;
-      playVideo(activeVideo);
+      activeVideo.play().catch(console.error);
     }
-  }, [currentVideo, videoState, videosLoaded, isVisible]);
-
-  // Handle visibility change events
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Pause videos when tab is hidden
-        if (video1Ref.current) video1Ref.current.pause();
-        if (video2Ref.current) video2Ref.current.pause();
-      } else if (isVisible && videosLoaded) {
-        // Resume active video when tab becomes visible
-        const activeVideo =
-          currentVideo === "adchero1" ? video1Ref.current : video2Ref.current;
-        if (activeVideo && videoState === "playing") {
-          playVideo(activeVideo);
-        }
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [currentVideo, videoState, isVisible, videosLoaded]);
+  }, [currentVideo, videoState, videosLoaded]);
 
   const features = [
     {
@@ -201,19 +148,11 @@ const HeroSection = () => {
                     : "opacity-0 scale-95 -skew-y-1 blur-md"
                   : "opacity-0 scale-95 skew-y-2 blur-lg pointer-events-none"
               }`}
+              autoPlay
               muted
               loop
               playsInline
               preload="metadata"
-              onCanPlay={() => {
-                if (
-                  currentVideo === "adchero1" &&
-                  videoState === "transitioning-in" &&
-                  isVisible
-                ) {
-                  playVideo(video1Ref.current);
-                }
-              }}
             >
               <source src="/adchero1.mp4" type="video/mp4" />
               <source src="/adchero1.webm" type="video/webm" />
@@ -229,19 +168,11 @@ const HeroSection = () => {
                     : "opacity-0 scale-95 skew-y-1 blur-md"
                   : "opacity-0 scale-95 -skew-y-2 blur-lg pointer-events-none"
               }`}
+              autoPlay
               muted
               loop
               playsInline
               preload="metadata"
-              onCanPlay={() => {
-                if (
-                  currentVideo === "adchero2" &&
-                  videoState === "transitioning-in" &&
-                  isVisible
-                ) {
-                  playVideo(video2Ref.current);
-                }
-              }}
             >
               <source src="/adchero2.mp4" type="video/mp4" />
               <source src="/adchero2.webm" type="video/webm" />
@@ -286,10 +217,10 @@ const HeroSection = () => {
           </h1>
         </div>
 
-        <div className="mb-8 sm:mb-12 max-w-3xl mx-auto">
-          <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed drop-shadow-lg">
-            Join a community that bridges the gap between tech knowledge and
-            career success.
+        <div className="mb-8 sm:mb-12 max-w-3xl mx-auto px-6 sm:px-0">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed drop-shadow-lg text-center sm:text-left">
+            Join a community that bridges the gap between tech
+            <br className="sm:hidden" /> knowledge and career success.
           </p>
         </div>
 
@@ -298,11 +229,13 @@ const HeroSection = () => {
           <div className="features-track">
             {features.map((f, i) => (
               <div key={i} className="feature-card">
-                <f.icon className={`h-8 w-8 ${f.color} mx-auto mb-2`} />
-                <div className="text-white font-semibold text-base">
+                <f.icon
+                  className={`h-6 w-6 sm:h-8 sm:w-8 ${f.color} mx-auto mb-2`}
+                />
+                <div className="text-white font-semibold text-sm sm:text-base">
                   {f.title}
                 </div>
-                <div className="text-gray-300 text-sm">{f.desc}</div>
+                <div className="text-gray-300 text-xs sm:text-sm">{f.desc}</div>
               </div>
             ))}
           </div>
@@ -321,14 +254,16 @@ const HeroSection = () => {
           overflow: hidden;
           max-width: 900px;
           margin: 0 auto;
+          padding: 0 1rem;
         }
         .features-track {
           display: flex;
           gap: 1rem;
-          animation: slideLeftRight 17s ease-in-out infinite;
+          animation: slideLeftRight 35s ease-in-out infinite;
         }
         .feature-card {
-          flex: 0 0 calc(25% - 1rem);
+          flex: 0 0 calc(20% - 1rem);
+          min-width: 160px;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(8px);
           border-radius: 0.75rem;
@@ -339,19 +274,82 @@ const HeroSection = () => {
         .feature-card:hover {
           transform: scale(1.05);
         }
-        /* 5s pause at far right */
+        /* Desktop animation */
         @keyframes slideLeftRight {
           0% {
             transform: translateX(0);
           }
-          40% {
-            transform: translateX(-25%);
+          20% {
+            transform: translateX(0);
           }
-          70% {
-            transform: translateX(-25%);
-          } /* hold for 5s here */
+          40% {
+            transform: translateX(-50%);
+          }
+          60% {
+            transform: translateX(-50%);
+          }
+          80% {
+            transform: translateX(0);
+          }
           100% {
             transform: translateX(0);
+          }
+        }
+
+        /* Mobile animation - starts with slight right offset to show first card completely */
+        /* Mobile animation - shows all 7 cards */
+        @keyframes slideLeftRightMobile {
+          0% {
+            transform: translateX(20%);
+          }
+          10% {
+            transform: translateX(20%);
+          }
+          20% {
+            transform: translateX(-11.91%);
+          }
+          30% {
+            transform: translateX(-11.91%);
+          }
+          40% {
+            transform: translateX(-40.48%);
+          }
+          50% {
+            transform: translateX(-40.48%);
+          }
+          60% {
+            transform: translateX(-69.05%);
+          }
+          70% {
+            transform: translateX(-69.05%);
+          }
+          80% {
+            transform: translateX(-97.62%);
+          }
+          90% {
+            transform: translateX(-97.62%);
+          }
+          100% {
+            transform: translateX(-130.19%);
+          }
+          110% {
+            transform: translateX(-140.19%);
+          }
+        }
+
+        @media (max-width: 640px) {
+          .features-container {
+            padding: 0 0.5rem;
+          }
+          .features-track {
+            gap: 0.5rem;
+            animation: slideLeftRightMobile 15s linear infinite; /* Changed from 70s to 15s */
+          }
+          .feature-card {
+            flex: 0 0 calc(30% - 0.333rem);
+            min-width: unset;
+            padding: 0.4rem;
+            border-radius: 0.5rem;
           }
         }
       `}</style>
