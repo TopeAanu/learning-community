@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Arit Dev Circle",
+  title: "Learning Circle",
   description:
-    "A community where developers designers, virtual assistants, technical writers collaborate, learn, and grow together. Join our Circle for hackathons, skill-building programs, mentorship, portfolio review, and networking opportunities that advance your tech career.",
+    "A community where developers designers, virtual assistants, technical writers collaborate, learn, and grow together. Join the Circle for hackathons, skill-building programs, mentorship, portfolio review, and networking opportunities that advance your tech career.",
 };
 
 export default function RootLayout({
